@@ -1,2 +1,2 @@
 # sme-tools
-Tools for generating mathematical expression in LaTeX
+Tools for generating mathematical expressions in LaTeX
