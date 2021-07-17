@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Vertical Addition with Carries</h1>
+    Enter a comma separated list of numbers like "999, 28, 3" to get the
+    LaTeX for vertical addition.
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.addends.label }}<br>
+            {{ form.addends(size=32) }}<br>
+            {% for error in form.addends.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

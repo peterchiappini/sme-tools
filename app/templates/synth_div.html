@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Synthetic Division</h1>
+    Enter two polynomials in the form "2 * x ** 2 + 2 * x + 3" to get the
+    LaTeX for synthetic division.
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.dividend.label }}<br>
+            {{ form.dividend(size=32) }}<br>
+            {% for error in form.dividend.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.divisor.label }}<br>
+            {{ form.divisor(size=32) }}<br>
+            {% for error in form.divisor.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
