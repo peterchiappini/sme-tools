@@ -1,6 +1,7 @@
 # coding=utf-8
 import sympy as sym
 from math import sqrt
+from sympy.core.function import _coeff_isneg
 
 
 def sgn(a, lead=False):
@@ -19,6 +20,48 @@ def sgn(a, lead=False):
     return " + "
 
 
+def constant_sign(x, leading=False):
+    """
+    Gives the string x with the appropriate sign in front
+    Useful for making strings involving adding a bunch of terms together
+    leading tells whether the constant is first, so shouldn't have a plus sign in that case
+    constant_sign(3) gives "+3"
+    constant_sign(3, True) gives "3"
+    constant_sign(-3) gives "-3"
+    constant_sign(sympify(1) / 2) gives "+ \frac{1}{2}"
+    etc.
+    """
+    if x >= 0 and not leading:
+        return " + %s" % sym.latex(x)
+    elif x >= 0 and leading:
+        return sym.latex(x)
+    elif x < 0:
+        return sym.latex(x)
+
+
+def pmsign(x, leading=False):
+    """
+    Gives the string x with the appropriate sign in front
+    Useful for making strings involving adding a bunch of terms together
+    leading tells whether the constant is first, so shouldn't have a plus sign in that case
+    constant_sign(3 * x) gives "+3x"
+    constant_sign(3 * x ** 2, Leading=True) gives "3x^2"
+    constant_sign(-3) gives "-3"
+    constant_sign(x / 2) gives "+ \frac{x}{2}"
+    etc.
+    """
+    x = sym.sympify(x)
+    if leading:
+        if abs(x) == 1:
+            return "" if x > 0 else "-"
+        else:
+            return sym.latex(x)
+    if _coeff_isneg(x):
+        return "- %s" % (sym.latex(abs(x)) if x != -1 else "")
+    else:
+        return "+ %s" % (sym.latex(x) if x != 1 else "")
+
+
 def coefficients(p, x=sym.symbols('x')):
     """
     finds the coefficients of a polynomial p
@@ -32,101 +75,90 @@ def coefficients(p, x=sym.symbols('x')):
     return l
 
 
-def show_zeros(p, var):
-    coeffs = coefficients(p, var)
-    coeffs.reverse()
-    exps = [k for k in range(len(coeffs))]
-    exps.reverse()
+def poly_slicer(poly, first_n_terms=None, show_zeros=True, ghost_terms=True, underline=False,
+                x=sym.symbols('x')):
+    """Helper Function for Polynomial long division"""
+    if show_zeros:
+        terms = sym.Poly(poly, x).all_terms()
+    else:
+        terms = sym.Poly(poly, x).terms()
 
-    ret = ""
-    lead = True
-    for a, k in zip(coeffs, exps):
-        if var ** k != 1:
-            if k != 0:
-                ret += sgn(a, lead) + sym.latex(var ** k)
-            else:
-                ret += sgn(a, lead)
+    first_n_terms = len(terms) if (first_n_terms is None or first_n_terms > len(terms)) else first_n_terms
+
+    if underline:
+        if len(terms) == 1 and terms[0][0][0] == 0:
+            first_term = constant_sign(terms[0][1], leading=True)
         else:
-            if a > 0:
-                ret += "+ %s" % a
-            else:
-                ret += "%s" % a
-        lead = False
+            first_term = pmsign(terms[0][1], leading=True)
+        poly_string = f"\\underline{{ \\left({first_term}{sym.latex(x ** terms[0][0][0])}"
 
-    return ret
+        for term in terms[1:first_n_terms]:
+            poly_string += f"{constant_sign(term[1])}" \
+                           f"{sym.latex(x ** term[0][0]) if term[0][0] != 0 else ''}"
+
+        poly_string += " \\right)}"
+    else:
+        if len(terms) == 1 and terms[0][0][0] == 0:
+            first_term = constant_sign(terms[0][1], leading=True)
+        else:
+            first_term = pmsign(terms[0][1], leading=True)
+        poly_string = f"{first_term}" \
+                      f"{sym.latex(x ** terms[0][0][0]) if terms[0][0][0] != 0 else ''}"
+
+        for term in terms[1:first_n_terms]:
+            poly_string += f"{constant_sign(term[1])}" \
+                           f"{sym.latex(x ** term[0][0]) if term[0][0] != 0 else ''}"
+
+    if ghost_terms:
+        poly_string += f"\\phantom{{ {'{{}}' if not underline else ''} "
+        for term in terms[first_n_terms:]:
+            poly_string += f"{constant_sign(term[1])}" \
+                           f"{sym.latex(x ** term[0][0]) if term[0][0] != 0 else ''}"
+        poly_string += " }"
+
+    return poly_string
 
 
-def first_n_terms(p, n, var=sym.symbols('x')):
-    p = sym.Poly(p, var)
-    coeffs = p.all_coeffs()
-
-    ret = sum([coeffs[k] * var ** (len(coeffs) - k - 1) for k in range(0, min(n, len(coeffs)))])
-
-    return sym.latex(ret)
-
-
-def poly_long_division(a, d, var=sym.symbols('x')):
+def poly_long_div(n, d, x=sym.symbols('x')):
     """
-    function a / d:
-    require d ≠ 0
-     q ← 0
-     r ← a       # At each step a = d × q + r
-     while r ≠ 0 AND degree(r) ≥ degree(d):
+    function n / d:
+        require d ≠ 0
+        q ← 0
+        r ← n       # At each step n = d × q + r
+        while r ≠ 0 AND degree(r) ≥ degree(d):
         t ← lead(r)/lead(d)     # Divide the leading terms
-        q ← q + t
-        r ← r − t * d
-     return (q, r)
-
-    :param a: Some whole number
-    :param d: Some other whole number
-    :param var: The variable, defaults to x
-    :return: LaTeX for a/d
+         q ← q + t
+         r ← r − t * d
+    return (q, r)
+    :return: LaTeX for polynomial long division n / d
     """
+    n = sym.Poly(n, x)
+    d = sym.Poly(d, x)
 
-    q = sym.div(a, d)[0]
-    n = len(coefficients(d, var))
+    q = sym.div(n, d)[0]
 
-    ret = "$$\\require{enclose}\\begin{array}{r}%s \\phantom{)} \\\\[-3pt] %s \\enclose{longdiv}{%s \\phantom{)}} " \
-          % (sym.latex(q), sym.latex(d), show_zeros(a, var))
+    long_div_string = f"\\require{{enclose}}" \
+                      f"\\begin{{array}}{{r}}" \
+                      f"{sym.latex(q.as_expr())} \\\\[-3pt] " \
+                      f"{sym.latex(d.as_expr())} \\enclose{{longdiv}}{{{poly_slicer(n)}}}"
 
-    remainders = []
-    subtract_me = []
+    term_length = len(d.all_terms())
+
     q = 0
-    r = a  # At each step n = d × q + r
-
+    r = n
     while r != 0 and sym.degree(r) >= sym.degree(d):
-        t = sym.LT(r, gens=var) / sym.LT(d, gens=var)  # Divide the leading terms
+        t = sym.LT(r) / sym.LT(d)
         q = q + t
-        r = sym.expand(sym.sympify(r - t * d))
+        r = r - t * d
 
-        subtract_me.append(sym.latex(sym.expand(t * d)) + "\\phantom{ }")
+        if r == 0 or sym.degree(r) < sym.degree(d):
+            long_div_string += f"\\\\[-3pt] -{poly_slicer(t * d, first_n_terms=term_length, underline=True)}" \
+                               f"\\\\[-3pt] {poly_slicer(r, show_zeros=False)}"
+        else:
+            long_div_string += f"\\\\[-3pt] -{poly_slicer(t * d, first_n_terms=term_length, underline=True)}" \
+                               f"\\\\[-3pt] {poly_slicer(r, first_n_terms=term_length)}"
 
-        remainders.append(first_n_terms(r, n, var) + "\\phantom{ ) }")
-
-    # Spacing :-0
-    poly = ""
-    poly2 = ""
-    space = [""]
-    space2 = ["", ""]
-    coeffs_a = sym.Poly(a, var).all_coeffs()
-    coeffs_a.reverse()
-    for k, s in enumerate(subtract_me):
-        poly = poly + "+" + "%s %s" % (abs(coeffs_a[k]), sym.latex(var ** k) if k != 0 else "")
-        space.append("\\phantom{%s )}" % poly)
-
-    for k, r in enumerate(remainders):
-        poly2 = poly2 + "+" + "%s %s" % (abs(coeffs_a[k]), sym.latex(var ** k) if k != 0 else "")
-        space2.append("\\phantom{%s )}" % poly2)
-
-    space.pop()
-    space2.pop()
-    space2.pop()
-
-    for s, r in zip(subtract_me, remainders):
-        ret += "\\\\ \\underline{-(%s)} %s \\\\ %s %s " % (s, space.pop(), r, space2.pop())
-
-    ret += "\\end{array}$$"
-    return ret
+    return f"{long_div_string} \\end{{array}}"
 
 
 def synthetic_division(f, g):
@@ -210,7 +242,7 @@ def int_long_division(a, d):
     :return: LaTeX for a/d
     """
 
-    q = a / d
+    q = int(a / d)
 
     ret = "$$\\require{enclose}\\begin{array}{r}%s \\\\[-3pt] %s \\enclose{longdiv}{%s}\kern-.2ex \\\\[-3pt]" \
           % (q, d, a)
@@ -224,7 +256,7 @@ def int_long_division(a, d):
         b = [d * dig(q, i) for i in range(n)]
 
         r = [d % a] * n
-        r[n - 1] = (a / (10 ** (n - 2))) - (b[n - 1] * 10)
+        r[n - 1] = int(a / (10 ** (n - 2))) - (b[n - 1] * 10)
         for i in range(n - 2, -1, -1):
             r[i] = (r[i + 1] - b[i]) * 10 + dig(a, i - 1)
         r[0] = int(r[0] / 10)
