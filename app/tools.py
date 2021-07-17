@@ -119,7 +119,7 @@ def poly_slicer(poly, first_n_terms=None, show_zeros=True, ghost_terms=True, und
     return poly_string
 
 
-def poly_long_div(n, d, x=sym.symbols('x')):
+def poly_long_division(n, d, x=sym.symbols('x')):
     """
     function n / d:
         require d ≠ 0
@@ -210,15 +210,15 @@ def vertical_addition(*addends):
     addends[0] = ["\\overset{%s}{%s}" % (carry, digit) for (carry, digit) in
                   zip(carries, ["\\phantom{0}"] + addends[0])]
 
-    vert_add = "\\begin{align}" + "\,".join(addends[0]) + "\\\\"
+    vert_add = "\\begin{align}" + "\\,".join(addends[0]) + "\\\\"
 
     for addend in addends[1:-1]:
-        vert_add += "\,".join(addend) + "\\\\"
+        vert_add += "\\,".join(addend) + "\\\\"
 
     spacing = "\\phantom{0} " * (len(addends[0]) - len(addends[-1]))
 
-    vert_add += "+" + spacing + " \\quad " + "\,".join(addends[-1]) \
-                + "\\\\ \\hline " + "%s" % "\,".join(total) + "\\end{align}"
+    vert_add += "+" + spacing + " \\quad " + "\\,".join(addends[-1]) \
+                + "\\\\ \\hline " + "%s" % "\\,".join(total) + "\\end{align}"
 
     return vert_add
 
@@ -232,7 +232,7 @@ def dig(n, i):
     """
     if n < 10 ** i:
         return 0
-    return (int(n) / (10 ** i)) % 10
+    return int(int(n) // (10 ** i)) % 10
 
 
 def int_long_division(a, d):
@@ -242,7 +242,7 @@ def int_long_division(a, d):
     :return: LaTeX for a/d
     """
 
-    q = int(a / d)
+    q = int(a // d)
 
     ret = "$$\\require{enclose}\\begin{array}{r}%s \\\\[-3pt] %s \\enclose{longdiv}{%s}\kern-.2ex \\\\[-3pt]" \
           % (q, d, a)
@@ -256,10 +256,10 @@ def int_long_division(a, d):
         b = [d * dig(q, i) for i in range(n)]
 
         r = [d % a] * n
-        r[n - 1] = int(a / (10 ** (n - 2))) - (b[n - 1] * 10)
+        r[n - 1] = int(a // (10 ** (n - 2))) - (b[n - 1] * 10)
         for i in range(n - 2, -1, -1):
             r[i] = (r[i + 1] - b[i]) * 10 + dig(a, i - 1)
-        r[0] = int(r[0] / 10)
+        r[0] = int(r[0] // 10)
 
         sb = []
         for bb in b:
