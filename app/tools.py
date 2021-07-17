@@ -158,7 +158,7 @@ def poly_long_division(n, d, x=sym.symbols('x')):
             long_div_string += f"\\\\[-3pt] -{poly_slicer(t * d, first_n_terms=term_length, underline=True)}" \
                                f"\\\\[-3pt] {poly_slicer(r, first_n_terms=term_length)}"
 
-    return f"{long_div_string} \\end{{array}}"
+    return f"$${long_div_string} \\end{{array}}$$"
 
 
 def synthetic_division(f, g):
