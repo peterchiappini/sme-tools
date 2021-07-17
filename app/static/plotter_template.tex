@@ -1,0 +1,41 @@
+\documentclass[tikz, border={8pt 14pt 0pt 0pt}]{standalone}
+\usepackage{xcolor}
+\usepackage{tkz-euclide}
+\usepackage{pgfplots}
+\usepgfplotslibrary{polar}
+
+\usetikzlibrary{decorations.markings, bending, arrows.meta,calc}
+
+% Custom colors
+\definecolor{blue}{rgb}{0, 0.14117647058823551, 0.4117647058823529}
+
+\pgfplotsset{polar/.append style={
+	xticklabels={, , $\frac{\pi}{6}$, $\frac{\pi}{3}$, $\frac{\pi}{2}$, $\frac{2\pi}{3}$,$\frac{5\pi}{6}$, $\pi$, $\frac{7\pi}{6}$, $\frac{4\pi}{3}$,$\frac{3\pi}{2}$, $\frac{5\pi}{3}$, $\frac{11\pi}{6}$, } ,thick }
+}
+
+\pgfplotsset{standard/.append style={
+	x=.6cm, y=.6cm,
+    	scale only axis,
+    	grid=major,
+    	grid style={gray!50},
+    	axis lines=middle,
+    	axis line style={shorten >=-15pt, shorten <=-15pt},
+    	inner axis line style={triangle 45-triangle 45},
+    	xlabel style={at=(current axis.right of origin), anchor=west, xshift=15pt}, xlabel={\large $x$},
+	ylabel style={at=(current axis.above origin), anchor=south, yshift=15pt}, ylabel={\large $y$},
+	yticklabel style={inner ysep=0pt, anchor=east},
+    	ytick style={thick,black},
+	ytick={-8, -7,...,8},
+	xticklabels={$-8$ \hphantom{-}, $-7$ \hphantom{-}, $-6$ \hphantom{-}, $-5$ \hphantom{-}, $-4$ \hphantom{-}, $-3$ \hphantom{-}, $-2$ \hphantom{-}, $-1$ \hphantom{-}, , $1$, $2$, $3$, $4$, $5$, $6$, $7$, $8$},
+    	xticklabel style={inner xsep=0pt, anchor=north},
+    	xtick style={thick,black},
+	xtick={-8, -7,...,8},
+    	ymin=-8,
+    	ymax=8,
+    	xmin=-8,
+    	xmax=8,
+}}
+
+\tikzset{>=Latex} % nice arrow heads
+
+\begin{document}

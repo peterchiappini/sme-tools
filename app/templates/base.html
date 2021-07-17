@@ -1,0 +1,152 @@
+<html>
+    <head><title>SME_Tools</title>
+<!-- Copyright (c) 2012-2015 The MathJax Consortium -->
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({
+   showProcessingMessages: false,
+   tex2jax: { inlineMath: [['$_','$_']] },
+   TeX: {
+ extensions: ["noErrors.js"],
+ noErrors: {
+   inlineDelimiters: ["",""],   // or ["$","$"] or ["\\(","\\)"]
+   multiLine: true,             // false for TeX on all one line
+   style: {
+     "font-size":   "90%",
+     "text-align":  "left",
+     "color":       "red",
+     "padding":     "1px 3px",
+     "border":      "2px solid"
+     // add any additional CSS styles that you want
+     //  (be sure there is no extra comma at the end of the last item)
+   }
+ }
+}
+ });
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_HTMLorMML"></script>
+
+<script>
+var Preview = {
+ delay: 150,        // delay after keystroke before updating
+
+ preview: null,     // filled in by Init below
+ buffer: null,      // filled in by Init below
+
+ timeout: null,     // store setTimout id
+ mjRunning: false,  // true when MathJax is processing
+ mjPending: false,  // true when a typeset has been queued
+ oldText: null,     // used to check if an update is needed
+
+ //
+ //  Get the preview and buffer DIV's
+ //
+ Init: function () {
+   this.preview = document.getElementById("MathPreview");
+   this.buffer = document.getElementById("MathBuffer");
+ },
+
+ //
+ //  Switch the buffer and preview, and display the right one.
+ //  (We use visibility:hidden rather than display:none since
+ //  the results of running MathJax are more accurate that way.)
+ //
+ SwapBuffers: function () {
+   var buffer = this.preview, preview = this.buffer;
+   this.buffer = buffer; this.preview = preview;
+   buffer.style.visibility = "hidden"; buffer.style.position = "absolute";
+   preview.style.position = ""; preview.style.visibility = "";
+ },
+
+ //
+ //  This gets called when a key is pressed in the textarea.
+ //  We check if there is already a pending update and clear it if so.
+ //  Then set up an update to occur after a small delay (so if more keys
+ //    are pressed, the update won't occur until after there has been
+ //    a pause in the typing).
+ //  The callback function is set up below, after the Preview object is set up.
+ //
+ Update: function () {
+   if (this.timeout) {clearTimeout(this.timeout)}
+   this.timeout = setTimeout(this.callback,this.delay);
+ },
+
+ //
+ //  Creates the preview and runs MathJax on it.
+ //  If MathJax is already trying to render the code, return
+ //  If the text hasn't changed, return
+ //  Otherwise, indicate that MathJax is running, and start the
+ //    typesetting.  After it is done, call PreviewDone.
+ //
+ CreatePreview: function () {
+   Preview.timeout = null;
+   if (this.mjPending) return;
+   var text = document.getElementById("MathInput").value;
+   if (text === this.oldtext) return;
+   if (this.mjRunning) {
+     this.mjPending = true;
+     MathJax.Hub.Queue(["CreatePreview",this]);
+   } else {
+     this.buffer.innerHTML = this.oldtext = text;
+     this.mjRunning = true;
+     MathJax.Hub.Queue(
+    ["Typeset",MathJax.Hub,this.buffer],
+    ["PreviewDone",this]
+     );
+   }
+ },
+
+ //
+ //  Indicate that MathJax is no longer running,
+ //  and swap the buffers to show the results.
+ //
+ PreviewDone: function () {
+   this.mjRunning = this.mjPending = false;
+   this.SwapBuffers();
+ }
+
+};
+
+//
+//  Cache a callback to the CreatePreview action
+//
+Preview.callback = MathJax.Callback(["CreatePreview",Preview]);
+Preview.callback.autoReset = true;  // make sure it can run more than once
+</script>
+</head>
+    <body>
+        <div>
+            SME_Tools:
+            <ul>
+            <li><a href="/vert_add">Vertical Addition</a></li>
+            <li><a href="/vert_sub">Vertical Subtraction</a></li>
+            <li><a href="/int_long_div">Integer Long Division</a></li>
+            <li><a href="/synth_div">Synthetic Division</a></li>
+            <li><a href="/poly_long_div">Polynomial Long Division</a></li>
+            <hr>
+            <li><a href="/plotter">Plot a Function</a></li>
+            <li><a href="/factor_tree">Make a Factor Tree</a></li>
+            </ul>
+        </div>
+        <div id="MathPreview" style="border:1px solid; padding: 5px; width:90%;margin-top:5px; margin-right:5px;"></div>
+        <div id="MathBuffer" style="border:1px solid; padding: 5px; width:90%; margin-top:5px; margin-right:5px; visibility:hidden; position:absolute; top:0; left: 0"></div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <textarea id="MathInput" rows="10" cols="50" oninput="Preview.Update()">{{ message }}</textarea>
+            {% endfor %}
+        {% else %}
+            <textarea id="MathInput" rows="10" cols="50" oninput="Preview.Update()"></textarea>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+<script>
+    Preview.Init();
+    Preview.Update();
+</script>
+    </body>
+</html>

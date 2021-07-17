@@ -1,0 +1,42 @@
+<head><title>SME_Tools</title></head>
+    <body>
+        <div>
+            SME_Tools:
+            <ul>
+            <li><a href="/vert_add">Vertical Addition</a></li>
+            <li><a href="/vert_sub">Vertical Subtraction</a></li>
+            <li><a href="/int_long_div">Integer Long Division</a></li>
+            <li><a href="/synth_div">Synthetic Division</a></li>
+            <li><a href="/poly_long_div">Polynomial Long Division</a></li>
+            <hr>
+            <li><a href="/plotter">Plot a Function</a></li>
+            <li><a href="/factor_tree">Make a Factor Tree</a></li>
+            </ul>
+        </div>
+        <hr>
+    </body>
+
+{% block content %}
+    <h1>Graph a Function</h1>
+    Enter a function like "2 * x ** 2 + 3 * x" to create a graph.
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.function.label }}<br>
+            {{ form.function(size=32) }}<br>
+            {% for error in form.function.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+        <div align="center">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <img  align="center" width="500" height="500" src={{ message }}>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        </div>
+    </form>
+{% endblock %}
