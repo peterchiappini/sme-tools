@@ -210,7 +210,7 @@ def int_long_division(a, d):
     :return: LaTeX for a/d
     """
 
-    q = a // d
+    q = a / d
 
     ret = "$$\\require{enclose}\\begin{array}{r}%s \\\\[-3pt] %s \\enclose{longdiv}{%s}\kern-.2ex \\\\[-3pt]" \
           % (q, d, a)
@@ -224,10 +224,10 @@ def int_long_division(a, d):
         b = [d * dig(q, i) for i in range(n)]
 
         r = [d % a] * n
-        r[n - 1] = (a // (10 ** (n - 2))) - (b[n - 1] * 10)
+        r[n - 1] = (a / (10 ** (n - 2))) - (b[n - 1] * 10)
         for i in range(n - 2, -1, -1):
             r[i] = (r[i + 1] - b[i]) * 10 + dig(a, i - 1)
-        r[0] = int(r[0] // 10)
+        r[0] = int(r[0] / 10)
 
         sb = []
         for bb in b:
