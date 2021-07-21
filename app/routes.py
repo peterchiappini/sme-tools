@@ -8,6 +8,7 @@ from app.forms import VerticalSubtraction
 from app.forms import IntegerLongDiv
 from app.forms import GraphPlotter
 from app.forms import FactorTree
+from app.forms import NumberLine
 
 import subprocess
 import os
@@ -21,6 +22,37 @@ from shutil import copyfile
 @app.route('/index')
 def index():
     return render_template('index.html')
+
+
+@app.route('/num_line_inequality', methods=['GET', 'POST'])
+def num_line_inequality():
+    form = NumberLine()
+    if form.validate_on_submit():
+        first, last, a, relation = sym.sympify(form.first.data), sym.sympify(form.last.data), \
+                                   sym.sympify(form.a.data), str(form.relation.data)
+
+        path = Path('.') / 'app/static'
+        filename = f"number_line"
+        copyfile("app/static/num_line_template.tex", f"app/static/{filename}" + ".tex")
+
+        with open(f"app/static/{filename}" + ".tex", "a") as file:
+            file.write(tools.number_line_inequality(first, last, a, relation) + "\\end{document}")
+
+        # Compile LaTeX file to a pdf
+        p = subprocess.Popen(["xelatex", "--shell-escape", f"{filename}.tex"], cwd=path)
+        p.wait()
+
+        # Convert the pdf to an svg
+        q = subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
+
+        # Clean up files
+        files_to_remove = [".aux", ".log", ".pdf", ".tex"]
+        for extension in files_to_remove:
+            os.remove(path / f'{filename}{extension}')
+
+        flash(f'/static/{filename}.svg')
+        return redirect('/num_line_inequality')
+    return render_template('num_line_inequality.html', title='Number Line Inequality', form=form)
 
 
 @app.route('/factor_tree', methods=['GET', 'POST'])

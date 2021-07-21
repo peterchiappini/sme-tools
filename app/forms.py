@@ -39,3 +39,12 @@ class GraphPlotter(FlaskForm):
 class FactorTree(FlaskForm):
     function = StringField('Number', validators=[DataRequired()])
     submit = SubmitField('Get Image')
+
+
+class NumberLine(FlaskForm):
+    first = StringField('Starting Point', validators=[DataRequired()])
+    last = StringField('Ending Point', validators=[DataRequired()])
+    a = StringField('Point', validators=[DataRequired()])
+    relation = StringField('Inequality Symbol', validators=[DataRequired()])
+
+    submit = SubmitField('Get Image')

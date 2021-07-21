@@ -364,3 +364,68 @@ def factor_tree(number):
     prime_factors_recursive(number, 0)
     output = r'\begin{forest}' + tree_text + r'\end{forest}'
     return output
+
+
+def number_line_inequality(first, last, a, relation):
+    negticks = ""
+    ticks = ""
+
+    for i in range(int(first), int(last) + 1):
+        if i < 0:
+            negticks += "%s," % i
+        else:
+            ticks += "%s," % i
+
+    if negticks != "":
+        negticks = negticks[:-1]
+    if ticks != "":
+        ticks = ticks[:-1]
+
+    point = ""
+    if int(a) != a:
+        if a < 0:
+            point = "\\draw[shift={(%s-.12,-3pt)},color=black] node[below] {\\tiny $%s$};" % (a, sym.latex(a))
+        else:
+            point = "\\draw[shift={(%s,-3pt)},color=black] node[below] {\\tiny $%s$};" % (a, sym.latex(a))
+
+    if relation == ">" or relation == ">=":
+        if relation == ">=":
+            paren = "["
+        else:
+            paren = "("
+        line = "\\begin{tikzpicture}" \
+               "\\draw[latex-latex, thick] (%s, 0) -- (%s, 0);" \
+               "\\foreach \\x in  {%s}" \
+               "\\draw[shift={(\\x,0)},color=black,thick] (0pt,3.5pt) -- (0pt,-3.5pt);" \
+               "\\foreach \\x in  {%s}" \
+               "\\draw[shift={(\\x,0)},color=black,thick] (0pt,3.5pt) -- (0pt,-3.5pt);" \
+               "\\foreach \\x in {%s}" \
+               "\\draw[shift={(\\x-.12,-3pt)},color=black, thick] node[below] {\\small $\\x$};" \
+               "\\foreach \\x in {%s}" \
+               "\\draw[shift={(\\x,-3pt)},color=black, thick] node[below] {\\small $\\x$};" \
+               "%s" \
+               "\\draw[{%s-latex}, ultra thick, color=cyan] (%s,0) -- (%s,0);" \
+               "\\end{tikzpicture}" % (
+               first - .5, last + .5, negticks, ticks, negticks, ticks, point, paren, a - .03, last + .53)
+
+    else:
+        if relation == "<=":
+            paren = "]"
+        else:
+            paren = ")"
+        line = "\\begin{tikzpicture}" \
+               "\\draw[latex-latex, thick] (%s, 0) -- (%s, 0);" \
+               "\\foreach \\x in  {%s}" \
+               "\\draw[shift={(\\x,0)},color=black,thick] (0pt,3.5pt) -- (0pt,-3.5pt);" \
+               "\\foreach \\x in  {%s}" \
+               "\\draw[shift={(\\x,0)},color=black,thick] (0pt,3.5pt) -- (0pt,-3.5pt);" \
+               "\\foreach \\x in {%s}" \
+               "\\draw[shift={(\\x-.12,-3pt)},color=black, thick] node[below] {\\small $\\x$};" \
+               "\\foreach \\x in {%s}" \
+               "\\draw[shift={(\\x,-3pt)},color=black, thick] node[below] {\\small $\\x$};" \
+               "%s" \
+               "\\draw[{latex-%s}, ultra thick, color=cyan] (%s,0) -- (%s,0);" \
+               "\\end{tikzpicture}" % (first - .5, last + .5, negticks, ticks, negticks, ticks, point,
+                                       paren, first - .53, a + .03)
+
+    return line

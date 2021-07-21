@@ -1,0 +1,65 @@
+<head><title>SME_Tools</title></head>
+<body>
+<div>
+    SME_Tools:
+    <ul>
+        <li><a href="/vert_add">Vertical Addition</a></li>
+        <li><a href="/vert_sub">Vertical Subtraction</a></li>
+        <li><a href="/int_long_div">Integer Long Division</a></li>
+        <li><a href="/synth_div">Synthetic Division</a></li>
+        <li><a href="/poly_long_div">Polynomial Long Division</a></li>
+        <hr>
+        <li><a href="/plotter">Plot a Function</a></li>
+        <li><a href="/factor_tree">Make a Factor Tree</a></li>
+        <li><a href="/num_line_inequality">Make a Number Line</a></li>
+    </ul>
+</div>
+<hr>
+</body>
+
+{% block content %}
+<h1>Create an Inequality on the Number Line</h1>
+Enter the start, end, point and inquality symbol. For example -4, 5, 2, >= will create a number line from -4 to 5
+and show the inequality x >= 2.
+<form action="" method="post" novalidate>
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.first.label }}<br>
+        {{ form.first(size=32) }}<br>
+        {% for error in form.first.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.last.label }}<br>
+        {{ form.last(size=32) }}<br>
+        {% for error in form.last.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.a.label }}<br>
+        {{ form.a(size=32) }}<br>
+        {% for error in form.a.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.relation.label }}<br>
+        {{ form.relation(size=32) }}<br>
+        {% for error in form.relation.errors %}
+        <span style="color: red;">[{{ error }}]</span>
+        {% endfor %}
+    </p>
+    <p>{{ form.submit() }}</p>
+    <div align="center">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        <img align="center" width="500" height="500" src={{ message }}>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+</form>
+{% endblock %}
