@@ -16,6 +16,7 @@ from pathlib import Path
 from app import tools
 import sympy as sym
 from shutil import copyfile
+import hashlib
 
 
 @app.route('/')
@@ -32,7 +33,7 @@ def num_line_inequality():
                                    sym.sympify(form.a.data), str(form.relation.data)
 
         path = Path('.') / 'app/static'
-        filename = f"number_line"
+        filename = f"number_line_{str(random.randint(1111, 3333))}"
         copyfile("app/static/num_line_template.tex", f"app/static/{filename}" + ".tex")
 
         with open(f"app/static/{filename}" + ".tex", "a") as file:
@@ -64,7 +65,7 @@ def factor_tree():
         n = sym.sympify(form.function.data)
 
         path = Path('.') / 'app/static'
-        filename = f"factor_tree"
+        filename = f"factor_tree_{str(random.randint(1111, 3333))}"
         copyfile("app/static/factor_tree_template.tex", f"app/static/{filename}" + ".tex")
 
         with open(f"app/static/{filename}" + ".tex", "a") as file:
@@ -98,7 +99,7 @@ def plotter():
             f = sym.sympify(form.function.data)
 
             path = Path('.') / 'app/static'
-            filename = f"graph"
+            filename = f"graph_{str(random.randint(1111, 3333))}"
             copyfile("app/static/plotter_template.tex", f"app/static/{filename}" + ".tex")
 
             with open(f"app/static/{filename}" + ".tex", "a") as file:

@@ -382,7 +382,7 @@ def number_line_inequality(first, last, a, relation):
         ticks = ticks[:-1]
 
     point = ""
-    if int(a) != a:
+    if int(sym.sympify(a)) != a:
         if a < 0:
             point = "\\draw[shift={(%s-.12,-3pt)},color=black] node[below] {\\tiny $%s$};" % (a, sym.latex(a))
         else:
