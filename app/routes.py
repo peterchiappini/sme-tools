@@ -43,7 +43,9 @@ def num_line_inequality():
         p.wait()
 
         # Convert the pdf to an svg
-        q = subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
+        if os.path.exists(f'{filename}.svg'):
+            os.remove(f'{filename}.svg')
+        subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
 
         # Clean up files
         files_to_remove = [".aux", ".log", ".pdf", ".tex"]
@@ -73,7 +75,9 @@ def factor_tree():
         p.wait()
 
         # Convert the pdf to an svg
-        q = subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
+        if os.path.exists(f'{filename}.svg'):
+            os.remove(f'{filename}.svg')
+        subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
 
         # Clean up files
         files_to_remove = [".aux", ".log", ".pdf", ".tex"]
@@ -105,7 +109,9 @@ def plotter():
             p.wait()
 
             # Convert the pdf to an svg
-            q = subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
+            if os.path.exists(f'{filename}.svg'):
+                os.remove(f'{filename}.svg')
+            subprocess.call(["pdf2svg", f'{filename}.pdf', f'{filename}.svg'], cwd=path)
 
             # Clean up files
             files_to_remove = [".aux", ".log", ".pdf", ".tex"]
