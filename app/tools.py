@@ -2,7 +2,7 @@
 import sympy as sym
 from math import sqrt
 from sympy.core.function import _coeff_isneg
-
+import random
 
 def sgn(a, lead=False):
     if lead:
@@ -429,3 +429,11 @@ def number_line_inequality(first, last, a, relation):
                                        paren, first - .53, a + .03)
 
     return line
+
+
+def random_animal(color):
+    if color in ["red", "orange", "yellow" "green", "blue", "indigo", "violet"]:
+        return random.choice(["raccoon", "horse", "doge", "big doggy", "Salem", "walrus", "platypus", "bear",
+                              "bat", "Maria"])
+    else:
+        return "That isn't in the rainbow"

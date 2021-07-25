@@ -48,3 +48,8 @@ class NumberLine(FlaskForm):
     relation = StringField('Inequality Symbol', validators=[DataRequired()])
 
     submit = SubmitField('Get Image')
+
+
+class RandomAnimal(FlaskForm):
+    color = StringField('Enter a color of the rainbow', validators=[DataRequired()])
+    submit = SubmitField('Submit')

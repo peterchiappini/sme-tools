@@ -9,6 +9,7 @@ from app.forms import IntegerLongDiv
 from app.forms import GraphPlotter
 from app.forms import FactorTree
 from app.forms import NumberLine
+from app.forms import RandomAnimal
 
 import subprocess
 import os
@@ -175,3 +176,13 @@ def vert_sub():
         flash('{}'.format(tools.vertical_subtraction(*a)))
         return redirect('/vert_sub')
     return render_template('vert_sub.html', title='Vertical Subtraction', form=form)
+
+
+@app.route('/colors', methods=['GET', 'POST'])
+def colors():
+    form = RandomAnimal()
+    if form.validate_on_submit():
+        color = form.color.data
+        flash(tools.random_animal(color))
+        return redirect('/colors')
+    return render_template('colors.html', title='', form=form)
