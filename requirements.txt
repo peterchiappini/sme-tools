@@ -1,0 +1,5 @@
+sympy
+flask
+wtforms
+flask-wtf
+flask-wtf
