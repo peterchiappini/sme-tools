@@ -49,7 +49,3 @@ class NumberLine(FlaskForm):
 
     submit = SubmitField('Get Image')
 
-
-class RandomAnimal(FlaskForm):
-    color = StringField('Enter a color of the rainbow', validators=[DataRequired()])
-    submit = SubmitField('Submit')

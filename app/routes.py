@@ -9,7 +9,6 @@ from app.forms import IntegerLongDiv
 from app.forms import GraphPlotter
 from app.forms import FactorTree
 from app.forms import NumberLine
-from app.forms import RandomAnimal
 
 import subprocess
 import os
